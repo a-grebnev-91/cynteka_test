@@ -17,42 +17,13 @@ public class Main {
 
         Set<Integer> firstRemainIndxs = getRemainingIndxs(firstBatch);
         Set<Integer> secondRemainIndxs = getRemainingIndxs(secondBatch);
-        TreeSet<Pair> topOfMostSimilar = new TreeSet<Pair>();
 
-        for (int i = 0; i < firstBatch.length; i++) {
-            for (int j = 0; j < secondBatch.length; j++) {
-                int longestCommonSubsequence = getLCS(firstBatch[i], secondBatch[j]);
-                Pair currPair = new Pair(i, j);
-                currPair.similarity = longestCommonSubsequence;
-                topOfMostSimilar.add(currPair);
-            }
-        }
-        StringBuilder resultBuilder = new StringBuilder();
-        while (!topOfMostSimilar.isEmpty()) {
-            Pair currPair = topOfMostSimilar.pollLast();
-            int firstIndx = currPair.firstIndx;
-            int secondIndx = currPair.secondIndx;
-            if (!firstRemainIndxs.contains(firstIndx) || !secondRemainIndxs.contains(secondIndx))
-                continue;
-            resultBuilder.append(firstBatch[firstIndx]);
-            resultBuilder.append(':');
-            resultBuilder.append(secondBatch[secondIndx]);
-            resultBuilder.append(System.lineSeparator());
-            firstRemainIndxs.remove(firstIndx);
-            secondRemainIndxs.remove(secondIndx);
-        }
+        TreeSet<Pair> topOfMostSimilar = getTopOfMostSimilar(firstBatch, secondBatch);
 
-        Set<Integer> notEmptySet = firstRemainIndxs.isEmpty() ? secondRemainIndxs : firstRemainIndxs;
-        String[] remainingStrings = firstRemainIndxs.isEmpty() ? secondBatch : firstBatch;
-        for (Integer i : notEmptySet) {
-            resultBuilder.append(remainingStrings[i]);
-            resultBuilder.append(":?");
-            resultBuilder.append(System.lineSeparator());
-        }
+        String resultString = getResultString(firstBatch, secondBatch, firstRemainIndxs, secondRemainIndxs, topOfMostSimilar);
 
-        //to writeMethod
         BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT));
-        writer.write(resultBuilder.toString());
+        writer.write(resultString);
         writer.close();
     }
 
@@ -92,6 +63,51 @@ public class Main {
             remainingIndxs.add(i);
         }
         return remainingIndxs;
+    }
+
+    private static String getResultString(
+            String[] firstBatch,
+            String[] secondBatch,
+            Set<Integer> firstRemainIndxs,
+            Set<Integer> secondRemainIndxs,
+            TreeSet<Pair> topOfMostSimilar
+    ) {
+        StringBuilder resultBuilder = new StringBuilder();
+        while (!topOfMostSimilar.isEmpty()) {
+            Pair currPair = topOfMostSimilar.pollLast();
+            int firstIndx = currPair.firstIndx;
+            int secondIndx = currPair.secondIndx;
+            if (!firstRemainIndxs.contains(firstIndx) || !secondRemainIndxs.contains(secondIndx))
+                continue;
+            resultBuilder.append(firstBatch[firstIndx]);
+            resultBuilder.append(':');
+            resultBuilder.append(secondBatch[secondIndx]);
+            resultBuilder.append(System.lineSeparator());
+            firstRemainIndxs.remove(firstIndx);
+            secondRemainIndxs.remove(secondIndx);
+        }
+
+        Set<Integer> notEmptySet = firstRemainIndxs.isEmpty() ? secondRemainIndxs : firstRemainIndxs;
+        String[] remainingStrings = firstRemainIndxs.isEmpty() ? secondBatch : firstBatch;
+        for (Integer i : notEmptySet) {
+            resultBuilder.append(remainingStrings[i]);
+            resultBuilder.append(":?");
+            resultBuilder.append(System.lineSeparator());
+        }
+        return resultBuilder.toString();
+    }
+
+    private static TreeSet<Pair> getTopOfMostSimilar(String[] firstBatch, String[] secondBatch) {
+        TreeSet<Pair> topOfMostSimilar = new TreeSet<>();
+        for (int i = 0; i < firstBatch.length; i++) {
+            for (int j = 0; j < secondBatch.length; j++) {
+                int longestCommonSubsequence = getLCS(firstBatch[i], secondBatch[j]);
+                Pair currPair = new Pair(i, j);
+                currPair.similarity = longestCommonSubsequence;
+                topOfMostSimilar.add(currPair);
+            }
+        }
+        return topOfMostSimilar;
     }
 
     private static class Pair implements Comparable<Pair> {
