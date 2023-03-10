@@ -1,4 +1,4 @@
-package org.example;
+package ru.cynteka.grebnev;
 
 import static org.junit.Assert.assertTrue;
 
