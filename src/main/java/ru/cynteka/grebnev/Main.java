@@ -20,7 +20,13 @@ public class Main {
 
         TreeSet<Pair> topOfMostSimilar = getTopOfMostSimilar(firstBatch, secondBatch);
 
-        String resultString = getResultString(firstBatch, secondBatch, firstRemainIndxs, secondRemainIndxs, topOfMostSimilar);
+        String resultString = getResultString(
+                firstBatch,
+                secondBatch,
+                firstRemainIndxs,
+                secondRemainIndxs,
+                topOfMostSimilar
+        );
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT));
         writer.write(resultString);
